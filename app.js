@@ -305,9 +305,12 @@
     }
 
     // =========================================================================
-    // 5. Speech Synthesis (Speech-to-Talk) Setup
+    // 5. Advanced Speech Synthesis (Speech-to-Talk) & Native Pronunciation Engine
     // =========================================================================
     let availableVoices = [];
+    let speechKeepAliveInterval = null;
+    let speechQueue = [];
+    let currentSpeechChunkIndex = 0;
 
     function populateVoices() {
         if (!('speechSynthesis' in window)) {
@@ -318,26 +321,103 @@
         availableVoices = window.speechSynthesis.getVoices();
         elements.statTTSStatus.textContent = availableVoices.length > 0 ? `${availableVoices.length} Voices` : 'Ready';
 
-        // Populate Settings voice dropdown
-        elements.settingTTSVoice.innerHTML = '<option value="">System Default Voice</option>';
-        elements.detailTTSVoiceSelect.innerHTML = '<option value="">System Default Voice</option>';
+        const groups = {
+            indic: { label: '🇮🇳 Hindi & Indian Voices', voices: [] },
+            english: { label: '🌐 English Voices', voices: [] },
+            spanish: { label: '🇪🇸 Spanish Voices', voices: [] },
+            french: { label: '🇫🇷 French Voices', voices: [] },
+            german: { label: '🇩🇪 German Voices', voices: [] },
+            italian: { label: '🇮🇹 Italian Voices', voices: [] },
+            portuguese: { label: '🇵🇹 Portuguese Voices', voices: [] },
+            russian: { label: '🇷🇺 Russian Voices', voices: [] },
+            japanese: { label: '🇯🇵 Japanese Voices', voices: [] },
+            korean: { label: '🇰🇷 Korean Voices', voices: [] },
+            chinese: { label: '🇨🇳 Chinese Voices', voices: [] },
+            arabic: { label: '🇸🇦 Arabic Voices', voices: [] },
+            other: { label: '🌍 Other World Voices', voices: [] }
+        };
 
+        const indicCodes = ['hi', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ml', 'pa', 'ur'];
+
+        // Categorize voices
         availableVoices.forEach(voice => {
-            const opt1 = document.createElement('option');
-            opt1.value = voice.voiceURI;
-            opt1.textContent = `${voice.name} (${voice.lang})${voice.default ? ' [Default]' : ''}`;
-            elements.settingTTSVoice.appendChild(opt1);
+            const lang = (voice.lang || '').toLowerCase();
+            const prefix = lang.split(/[-_]/)[0];
 
-            const opt2 = document.createElement('option');
-            opt2.value = voice.voiceURI;
-            opt2.textContent = `${voice.name} (${voice.lang})`;
-            elements.detailTTSVoiceSelect.appendChild(opt2);
+            if (indicCodes.includes(prefix)) {
+                groups.indic.voices.push(voice);
+            } else if (prefix === 'en') {
+                groups.english.voices.push(voice);
+            } else if (prefix === 'es') {
+                groups.spanish.voices.push(voice);
+            } else if (prefix === 'fr') {
+                groups.french.voices.push(voice);
+            } else if (prefix === 'de') {
+                groups.german.voices.push(voice);
+            } else if (prefix === 'it') {
+                groups.italian.voices.push(voice);
+            } else if (prefix === 'pt') {
+                groups.portuguese.voices.push(voice);
+            } else if (prefix === 'ru') {
+                groups.russian.voices.push(voice);
+            } else if (prefix === 'ja') {
+                groups.japanese.voices.push(voice);
+            } else if (prefix === 'ko') {
+                groups.korean.voices.push(voice);
+            } else if (prefix === 'zh') {
+                groups.chinese.voices.push(voice);
+            } else if (prefix === 'ar') {
+                groups.arabic.voices.push(voice);
+            } else {
+                groups.other.voices.push(voice);
+            }
         });
+
+        // Sort natural / neural / google voices to top of each group
+        Object.values(groups).forEach(g => {
+            g.voices.sort((a, b) => {
+                const aName = a.name.toLowerCase();
+                const bName = b.name.toLowerCase();
+                const aQuality = (aName.includes('natural') || aName.includes('neural') || aName.includes('google') || aName.includes('online')) ? 1 : 0;
+                const bQuality = (bName.includes('natural') || bName.includes('neural') || bName.includes('google') || bName.includes('online')) ? 1 : 0;
+                return bQuality - aQuality || a.name.localeCompare(b.name);
+            });
+        });
+
+        function buildSelectOptions(selectElem) {
+            selectElem.innerHTML = '';
+
+            const autoOption = document.createElement('option');
+            autoOption.value = 'auto';
+            autoOption.textContent = '✨ Smart Auto-Detect Native Voice (Recommended)';
+            selectElem.appendChild(autoOption);
+
+            Object.values(groups).forEach(g => {
+                if (g.voices.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = g.label;
+                    g.voices.forEach(v => {
+                        const opt = document.createElement('option');
+                        opt.value = v.voiceURI;
+                        const qualityBadge = (v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('online')) ? ' [High Quality]' : '';
+                        opt.textContent = `${v.name} (${v.lang})${qualityBadge}`;
+                        optgroup.appendChild(opt);
+                    });
+                    selectElem.appendChild(optgroup);
+                }
+            });
+        }
+
+        buildSelectOptions(elements.settingTTSVoice);
+        buildSelectOptions(elements.detailTTSVoiceSelect);
 
         // Restore selected voice if stored
         if (state.settings.ttsVoiceURI) {
             elements.settingTTSVoice.value = state.settings.ttsVoiceURI;
             elements.detailTTSVoiceSelect.value = state.settings.ttsVoiceURI;
+        } else {
+            elements.settingTTSVoice.value = 'auto';
+            elements.detailTTSVoiceSelect.value = 'auto';
         }
     }
 
@@ -346,53 +426,245 @@
         populateVoices();
     }
 
-    function speakText(text, voiceURI, rate = 1.0, pitch = 1.0, onStart, onEnd) {
+    /**
+     * Accurately detects language script from text unicode characters
+     */
+    function detectLanguageFromText(text, fallback = 'en-US') {
+        if (!text) return fallback;
+        const str = text.trim();
+
+        // Indic Scripts
+        if (/[\u0900-\u097F]/.test(str)) return 'hi-IN'; // Devanagari (Hindi, Marathi)
+        if (/[\u0980-\u09FF]/.test(str)) return 'bn-IN'; // Bengali
+        if (/[\u0B80-\u0BFF]/.test(str)) return 'ta-IN'; // Tamil
+        if (/[\u0C00-\u0C7F]/.test(str)) return 'te-IN'; // Telugu
+        if (/[\u0A80-\u0AFF]/.test(str)) return 'gu-IN'; // Gujarati
+        if (/[\u0C80-\u0CFF]/.test(str)) return 'kn-IN'; // Kannada
+        if (/[\u0D00-\u0D7F]/.test(str)) return 'ml-IN'; // Malayalam
+        if (/[\u0A00-\u0A7F]/.test(str)) return 'pa-IN'; // Punjabi
+        if (/[\u0600-\u06FF]/.test(str)) return 'ar-SA'; // Arabic
+
+        // Asian Scripts
+        if (/[\u3040-\u30FF\u31F0-\u31FF]/.test(str)) return 'ja-JP'; // Japanese Kana
+        if (/[\uAC00-\uD7AF]/.test(str)) return 'ko-KR'; // Korean Hangul
+        if (/[\u4E00-\u9FFF]/.test(str)) return 'zh-CN'; // Chinese Characters
+        if (/[\u0400-\u04FF]/.test(str)) return 'ru-RU'; // Cyrillic (Russian)
+        if (/[\u0E00-\u0E7F]/.test(str)) return 'th-TH'; // Thai
+
+        // European Diacritic Signatures
+        if (/[¿¡ñáéíóúÁÉÍÓÚÑ]/.test(str)) return 'es-ES'; // Spanish
+        if (/[çœàèùâêîôûëïüÇÀÈÙÂÊÎÔÛ]/.test(str)) return 'fr-FR'; // French
+        if (/[äöüßÄÖÜ]/.test(str)) return 'de-DE'; // German
+        if (/[ãõçáéíóúâêôÃÕÁÉÍÓÚ]/.test(str)) return 'pt-BR'; // Portuguese
+        if (/[àèéìíîòóùúÀÈÉÌÍÒÓÙ]/.test(str)) return 'it-IT'; // Italian
+
+        return fallback;
+    }
+
+    /**
+     * Resolves the best native voice for accurate native pronunciation
+     */
+    function findBestNativeVoice(targetLangCode, preferredVoiceURI) {
+        if (!availableVoices || availableVoices.length === 0) return null;
+
+        // If user explicitly picked a non-auto voice, check if it can speak the text
+        if (preferredVoiceURI && preferredVoiceURI !== 'auto') {
+            const explicitVoice = availableVoices.find(v => v.voiceURI === preferredVoiceURI);
+            if (explicitVoice) {
+                // If the voice's language matches targetLangCode family, use it
+                const targetPrefix = (targetLangCode || 'en').split(/[-_]/)[0].toLowerCase();
+                const voicePrefix = (explicitVoice.lang || '').split(/[-_]/)[0].toLowerCase();
+                if (targetPrefix === voicePrefix || targetPrefix === 'en') {
+                    return explicitVoice;
+                }
+            }
+        }
+
+        const target = (targetLangCode || 'en-US').toLowerCase();
+        const primaryCode = target.split(/[-_]/)[0];
+
+        // 1. Exact dialect match + Natural/Neural/Google
+        let match = availableVoices.find(v => {
+            const vLang = (v.lang || '').toLowerCase();
+            const vName = v.name.toLowerCase();
+            return vLang === target && (vName.includes('natural') || vName.includes('neural') || vName.includes('google') || vName.includes('online'));
+        });
+        if (match) return match;
+
+        // 2. Exact dialect match
+        match = availableVoices.find(v => (v.lang || '').toLowerCase() === target);
+        if (match) return match;
+
+        // 3. Primary language match + Natural/Neural/Google
+        match = availableVoices.find(v => {
+            const vPrefix = (v.lang || '').split(/[-_]/)[0].toLowerCase();
+            const vName = v.name.toLowerCase();
+            return vPrefix === primaryCode && (vName.includes('natural') || vName.includes('neural') || vName.includes('google') || vName.includes('online'));
+        });
+        if (match) return match;
+
+        // 4. Primary language match
+        match = availableVoices.find(v => (v.lang || '').split(/[-_]/)[0].toLowerCase() === primaryCode);
+        if (match) return match;
+
+        // 5. Default voice or first available
+        return availableVoices.find(v => v.default) || availableVoices[0];
+    }
+
+    /**
+     * Splits long text into natural punctuation chunks to avoid browser timeout bugs
+     */
+    function splitTextIntoSpeechChunks(text) {
+        if (!text) return [];
+        // Clean markdown, brackets, and code symbols that confuse pronunciation
+        const cleanText = text
+            .replace(/[*_#`~[\]()]/g, ' ')
+            .replace(/https?:\/\/\S+/g, 'link')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
+
+        const sentences = cleanText.match(/[^.!?;\n]+[.!?;\n]+|[^.!?;\n]+$/g) || [cleanText];
+        const chunks = [];
+
+        sentences.forEach(s => {
+            const trimmed = s.trim();
+            if (!trimmed) return;
+            if (trimmed.length > 160) {
+                // Further split long sentence by commas or clauses
+                const parts = trimmed.split(/([,:]+)/);
+                let buffer = '';
+                parts.forEach(part => {
+                    if ((buffer + part).length > 150) {
+                        if (buffer.trim()) chunks.push(buffer.trim());
+                        buffer = part;
+                    } else {
+                        buffer += part;
+                    }
+                });
+                if (buffer.trim()) chunks.push(buffer.trim());
+            } else {
+                chunks.push(trimmed);
+            }
+        });
+
+        return chunks.length > 0 ? chunks : [cleanText];
+    }
+
+    /**
+     * Speaks text with authentic native language pronunciation and anti-stall keepalive
+     */
+    function speakText(text, voiceURI, rate = 1.0, pitch = 1.0, targetLangCode = null, onStart = null, onEnd = null) {
         if (!('speechSynthesis' in window)) {
             showToast('Text-to-Speech is not supported in this browser.', 'error');
             return;
         }
 
-        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        stopSpeaking(); // Stop any active speech
 
         if (!text || text.trim().length === 0) {
             showToast('No text available to speak.', 'error');
             return;
         }
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = parseFloat(rate) || 1.0;
-        utterance.pitch = parseFloat(pitch) || 1.0;
+        // Determine language & native voice
+        const resolvedLang = targetLangCode || detectLanguageFromText(text, state.settings.defaultLang || 'en-US');
+        const matchedVoice = findBestNativeVoice(resolvedLang, voiceURI || state.settings.ttsVoiceURI);
+        const chunks = splitTextIntoSpeechChunks(text);
 
-        if (voiceURI) {
-            const found = availableVoices.find(v => v.voiceURI === voiceURI);
-            if (found) utterance.voice = found;
+        speechQueue = chunks;
+        currentSpeechChunkIndex = 0;
+        state.isTTSSpeaking = true;
+
+        if (onStart) onStart(matchedVoice, resolvedLang);
+
+        // Keep-alive interval for Chromium's long-utterance bug
+        if (speechKeepAliveInterval) clearInterval(speechKeepAliveInterval);
+        speechKeepAliveInterval = setInterval(() => {
+            if (state.isTTSSpeaking && window.speechSynthesis.speaking) {
+                window.speechSynthesis.pause();
+                window.speechSynthesis.resume();
+            } else {
+                clearInterval(speechKeepAliveInterval);
+            }
+        }, 10000);
+
+        function playNextChunk() {
+            if (!state.isTTSSpeaking || currentSpeechChunkIndex >= speechQueue.length) {
+                state.isTTSSpeaking = false;
+                if (speechKeepAliveInterval) clearInterval(speechKeepAliveInterval);
+                if (onEnd) onEnd();
+                return;
+            }
+
+            const chunkText = speechQueue[currentSpeechChunkIndex];
+            currentSpeechChunkIndex++;
+
+            const utterance = new SpeechSynthesisUtterance(chunkText);
+            utterance.rate = Math.max(0.6, Math.min(2.0, parseFloat(rate) || 1.0));
+            utterance.pitch = Math.max(0.5, Math.min(1.5, parseFloat(pitch) || 1.0));
+
+            // CRITICAL: Set both voice and matching language for accurate native pronunciation
+            if (matchedVoice) {
+                utterance.voice = matchedVoice;
+                utterance.lang = matchedVoice.lang;
+            } else {
+                utterance.lang = resolvedLang;
+            }
+
+            utterance.onend = () => {
+                if (state.isTTSSpeaking) {
+                    playNextChunk();
+                }
+            };
+
+            utterance.onerror = (e) => {
+                console.warn('Speech chunk error:', e);
+                if (state.isTTSSpeaking) {
+                    playNextChunk();
+                }
+            };
+
+            state.speechUtterance = utterance;
+            window.speechSynthesis.speak(utterance);
         }
 
-        utterance.onstart = () => {
-            state.isTTSSpeaking = true;
-            if (onStart) onStart();
-        };
-
-        utterance.onend = () => {
-            state.isTTSSpeaking = false;
-            if (onEnd) onEnd();
-        };
-
-        utterance.onerror = (e) => {
-            state.isTTSSpeaking = false;
-            console.error('Speech synthesis error:', e);
-            if (onEnd) onEnd();
-        };
-
-        state.speechUtterance = utterance;
-        window.speechSynthesis.speak(utterance);
+        playNextChunk();
     }
 
     function stopSpeaking() {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            state.isTTSSpeaking = false;
         }
+        if (speechKeepAliveInterval) {
+            clearInterval(speechKeepAliveInterval);
+            speechKeepAliveInterval = null;
+        }
+        speechQueue = [];
+        currentSpeechChunkIndex = 0;
+        state.isTTSSpeaking = false;
+    }
+
+    function getNativeGreeting(langCode) {
+        const prefix = (langCode || 'en').split(/[-_]/)[0].toLowerCase();
+        const greetings = {
+            'hi': 'नमस्ते! Talk2Text में आपका स्वागत है। मैं आपकी भाषा में बिल्कुल सही उच्चारण के साथ बोल सकता हूँ।',
+            'bn': 'নমস্কার! Talk2Text এ আপনাকে স্বাগতম। আমি সঠিক উচ্চারণে কথা বলতে পারি।',
+            'ta': 'வணக்கம்! Talk2Text-க்கு வரவேற்கிறோம். நான் சரியான உச்சரிப்பில் பேச முடியும்.',
+            'te': 'నమస్కారం! Talk2Text కు స్వాగతం. నేను ఖచ్చితమైన ఉచ్చారణతో మాట్లాడగలను.',
+            'mr': 'नमस्कार! Talk2Text मध्ये आपले स्वागत आहे. मी स्पष्ट उच्चारणासह बोलू शकतो.',
+            'gu': 'નમસ્તે! Talk2Text માં આપનું સ્વાગત છે. હું સાચા ઉચ્ચાર સાથે બોલી શકું છું.',
+            'es': '¡Hola! Bienvenido a Talk2Text. Pronuncio todas las palabras en español con claridad y precisión.',
+            'fr': 'Bonjour ! Bienvenue sur Talk2Text. Je prononce chaque mot en français avec clarté et naturel.',
+            'de': 'Hallo! Willkommen bei Talk2Text. Ich spreche Deutsch mit präziser und klarer Aussprache.',
+            'it': 'Ciao! Benvenuto su Talk2Text. Posso pronunciare ogni parola in italiano con naturalezza.',
+            'pt': 'Olá! Bem-vindo ao Talk2Text. Eu pronuncio todas as palavras com sotaque natural.',
+            'ru': 'Здравствуйте! Добро пожаловать в Talk2Text. Я говорю по-русски с правильным произношением.',
+            'ja': 'こんにちは！Talk2Textへようこそ。正確な発音でテキストを読み上げます。',
+            'ko': '안녕하세요! Talk2Text에 오신 것을 환영합니다. 정확한 발음으로 읽어드립니다.',
+            'zh': '你好！欢迎使用 Talk2Text。我可以为您清晰准确地朗读中文。',
+            'ar': 'مرحباً بكم في Talk2Text. أستطيع نطق الكلمات العربية بكل دقة ووضوح.'
+        };
+        return greetings[prefix] || 'Hello! Welcome to Talk2Text. I am ready to read your transcriptions aloud with accurate native pronunciation.';
     }
 
     // =========================================================================
@@ -876,12 +1148,22 @@
             elements.detailAudioPlayer.removeAttribute('src');
         }
 
-        // Setup TTS voice
-        if (state.settings.ttsVoiceURI) {
+        // Setup TTS voice with automatic native pronunciation match
+        const detectedLang = item.langCode || detectLanguageFromText(item.text, 'en-US');
+        const nativeVoice = findBestNativeVoice(detectedLang, state.settings.ttsVoiceURI);
+
+        if (state.settings.ttsVoiceURI && state.settings.ttsVoiceURI !== 'auto') {
             elements.detailTTSVoiceSelect.value = state.settings.ttsVoiceURI;
+        } else if (nativeVoice) {
+            elements.detailTTSVoiceSelect.value = nativeVoice.voiceURI;
+        } else {
+            elements.detailTTSVoiceSelect.value = 'auto';
         }
+
         elements.detailTTSSpeedSelect.value = state.settings.ttsRate || '1.0';
-        elements.ttsReadingStatus.textContent = 'Ready to speak';
+        elements.ttsReadingStatus.textContent = nativeVoice 
+            ? `Ready (${nativeVoice.name} • ${nativeVoice.lang})`
+            : 'Ready to speak';
         elements.detailTTSPlayBtn.style.display = 'inline-flex';
         elements.detailTTSStopBtn.style.display = 'none';
 
@@ -1168,8 +1450,10 @@
                     state.settings.ttsVoiceURI,
                     state.settings.ttsRate,
                     state.settings.ttsPitch,
-                    () => {
-                        showToast(`Speaking "${item.title}"...`, 'info');
+                    item.langCode,
+                    (matchedVoice, resolvedLang) => {
+                        const voiceName = matchedVoice ? matchedVoice.name : 'Native';
+                        showToast(`Speaking in ${getLanguageNameFromCode(resolvedLang)} (${voiceName})...`, 'info');
                     },
                     () => {
                         btn.innerHTML = '<i class="ri-volume-up-line"></i>';
@@ -1465,13 +1749,18 @@
             const text = elements.detailTextarea.value;
             const voice = elements.detailTTSVoiceSelect.value;
             const speed = elements.detailTTSSpeedSelect.value;
+            const item = state.transcripts.find(t => t.id === state.activeEditingId);
+            const targetLang = item ? item.langCode : null;
 
             elements.detailTTSPlayBtn.style.display = 'none';
             elements.detailTTSStopBtn.style.display = 'inline-flex';
             elements.ttsReadingStatus.textContent = 'Speaking aloud...';
 
-            speakText(text, voice, speed, 1.0, 
-                () => {},
+            speakText(text, voice, speed, 1.0, targetLang,
+                (matchedVoice, resolvedLang) => {
+                    const voiceName = matchedVoice ? matchedVoice.name : 'Native';
+                    elements.ttsReadingStatus.textContent = `Speaking (${voiceName} • ${resolvedLang})`;
+                },
                 () => {
                     elements.detailTTSPlayBtn.style.display = 'inline-flex';
                     elements.detailTTSStopBtn.style.display = 'none';
@@ -1539,15 +1828,15 @@
         });
 
         elements.testVoiceBtn.addEventListener('click', () => {
-            const voice = elements.settingTTSVoice.value;
+            const voiceURI = elements.settingTTSVoice.value;
             const rate = elements.settingTTSRate.value;
             const pitch = elements.settingTTSPitch.value;
-            speakText(
-                'Hello! Welcome to Talk2Text. I am ready to transcribe your speech and read back your notes aloud.',
-                voice,
-                rate,
-                pitch
-            );
+            const matchedVoice = availableVoices.find(v => v.voiceURI === voiceURI);
+            const testLang = matchedVoice ? matchedVoice.lang : (state.settings.defaultLang || 'en-US');
+            const sampleGreeting = getNativeGreeting(testLang);
+
+            showToast(`Testing voice in ${getLanguageNameFromCode(testLang)} (${matchedVoice ? matchedVoice.name : 'Auto'})...`, 'info');
+            speakText(sampleGreeting, voiceURI, rate, pitch, testLang);
         });
 
         elements.saveSettingsBtn.addEventListener('click', () => {
@@ -1626,13 +1915,38 @@
             'en-US': 'English (US)',
             'en-GB': 'English (UK)',
             'en-IN': 'English (India)',
+            'en-AU': 'English (Australia)',
+            'en-CA': 'English (Canada)',
             'hi-IN': 'Hindi',
-            'es-ES': 'Spanish',
-            'es-MX': 'Spanish',
-            'fr-FR': 'French',
+            'bn-IN': 'Bengali',
+            'ta-IN': 'Tamil',
+            'te-IN': 'Telugu',
+            'mr-IN': 'Marathi',
+            'gu-IN': 'Gujarati',
+            'kn-IN': 'Kannada',
+            'ml-IN': 'Malayalam',
+            'pa-Guru-IN': 'Punjabi',
+            'ur-IN': 'Urdu',
+            'es-ES': 'Spanish (Spain)',
+            'es-MX': 'Spanish (Mexico)',
+            'fr-FR': 'French (France)',
+            'fr-CA': 'French (Canada)',
             'de-DE': 'German',
+            'it-IT': 'Italian',
+            'pt-BR': 'Portuguese (Brazil)',
+            'pt-PT': 'Portuguese (Portugal)',
+            'ru-RU': 'Russian',
+            'nl-NL': 'Dutch',
+            'pl-PL': 'Polish',
+            'tr-TR': 'Turkish',
             'ja-JP': 'Japanese',
-            'zh-CN': 'Chinese'
+            'ko-KR': 'Korean',
+            'zh-CN': 'Chinese (Simplified)',
+            'zh-TW': 'Chinese (Traditional)',
+            'ar-SA': 'Arabic',
+            'id-ID': 'Indonesian',
+            'th-TH': 'Thai',
+            'vi-VN': 'Vietnamese'
         };
         return map[code] || 'English';
     }
