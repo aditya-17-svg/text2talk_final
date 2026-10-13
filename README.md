@@ -67,3 +67,38 @@ http://localhost:8000
 | **Canvas Visualizer** | ✅ Supported | ✅ Supported | ✅ Supported |
 
 *Google Chrome or Microsoft Edge is recommended for the best real-time microphone dictation experience.*
+The 6 Technical Stages of the Speech-to-Text Flow
+
+When presenting, break the flow down into these 6 chronological stages:
+
+Stage 1: Audio Ingestion & Capture
+What happens: The system captures raw acoustic analog pressure waves from the user's microphone or uploaded audio container (.mp3, .wav, .m4a).
+Implementation: Uses the browser's navigator.mediaDevices.getUserMedia({ audio: true }) API and routes the stream concurrently into a recording pipeline (MediaRecorder) and an audio analysis pipeline.
+
+Stage 2: Signal Preprocessing & Feature Extraction
+What happens: Raw continuous waveforms cannot be processed by neural networks directly.
+Sampling & Quantization: Converts analog sound into discrete digital samples (typically 16 kHz, 16-bit PCM).
+Framing & Windowing: Splits audio into short 20–30 ms overlapping frames.
+Fast Fourier Transform (FFT): Converts time-domain waves into frequency-domain representations.
+Mel-Spectrogram / MFCC Generation: Maps frequencies onto the human ear's non-linear perception (Mel scale).
+
+Stage 3: Acoustic Modeling (Audio 
+→
+→ Phonemes)
+What happens: The Acoustic Model (e.g., Conformer, CTC, or Whisper Transformer encoder) maps spectral audio frames into probability distributions over phonemes (the smallest phonetic units of human speech, such as /k/, /æ/, /t/).
+
+Stage 4: Language Modeling & Decoding (Phonemes 
+→
+→ Words)
+What happens: The Decoder uses a Language Model (N-gram or Transformer decoder) combined with beam search to resolve homophones and predict the most likely word sequence given context (e.g., distinguishing "recognize speech" from "wreck a nice beach").
+
+Stage 5: Streaming Decoding (Interim vs. Final Results)
+What happens:
+Interim Results: Real-time hypotheses rendered with zero latency while the speaker is still talking (grey/italic preview words).
+Final Results: Locked-in sentences once a pause or complete syntactic phrase boundary is detected.
+
+Stage 6: Post-Processing & Smart NLP
+What happens:
+Punctuation & Capitalization Restoration: Adds periods, commas, and capitalizes sentence starts.
+Disfluency Removal: Cleans filler words ("um", "uh", "you know").
+Value-add NLP: Extracts action items, generates executive summaries, and formats subtitles (.srt).
