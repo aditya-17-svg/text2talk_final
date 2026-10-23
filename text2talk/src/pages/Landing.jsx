@@ -55,24 +55,32 @@ export default function Landing() {
       text2talk
     </Link>
 
-    <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
-      {NAV.map(([l, h]) => (
-        <a key={l} href={h}
-          className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition duration-200 hover:-translate-y-0.5 hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
-          {l}
-        </a>
-      ))}
-    </nav>
+    <nav className="hidden items-center gap-2 md:flex" aria-label="Primary">
+  {NAV.map(([l, h]) => (
+    <a key={l} href={h}
+      className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+      {l}
+    </a>
+  ))}
+</nav>
 
     <div className="flex items-center gap-2">
       <Link to="/login"
-        className="hidden rounded-full border border-white/30 px-5 py-2 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:block">
-        Sign In
-      </Link>
-      <Link to="/register"
-        className="group rounded-full bg-white px-5 py-2 text-sm font-semibold text-brand-700 shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-brand-100 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
-        Get Started <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
-      </Link>
+  className="hidden rounded-full border border-white/25 bg-white/10 px-5 py-2 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0 sm:block">
+  Sign In
+</Link>
+<Link to="/register"
+  className="group rounded-full border border-white bg-white px-5 py-2 text-sm font-semibold text-brand-700 shadow-md transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+  Get Started <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
+</Link>
+      <Link to="/login"
+  className="hidden rounded-full border border-white/25 bg-white/10 px-5 py-2 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0 sm:block">
+  Sign In
+</Link>
+<Link to="/register"
+  className="group rounded-full border border-white bg-white px-5 py-2 text-sm font-semibold text-brand-700 shadow-md transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+  Get Started <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
+</Link>
       <button className="rounded-full p-2 hover:bg-white/15 md:hidden" aria-label="Menu" onClick={() => setOpen(!open)}>
         {open ? <X /> : <Menu />}
       </button>
@@ -80,15 +88,15 @@ export default function Landing() {
   </div>
 
   {open && (
-    <nav className="space-y-2 border-t border-white/10 bg-night p-4 md:hidden">
-      {[...NAV, ['Sign In', '/login']].map(([l, h]) => (
-        <a key={l} href={h} onClick={() => setOpen(false)}
-          className="block rounded-full bg-white/10 px-4 py-2.5 text-sm font-medium transition hover:bg-white hover:text-brand-700">
-          {l}
-        </a>
-      ))}
-    </nav>
-  )}
+  <nav className="space-y-2 border-t border-white/10 bg-night p-4 md:hidden">
+    {[...NAV, ['Sign In', '/login']].map(([l, h]) => (
+      <a key={l} href={h} onClick={() => setOpen(false)}
+        className="block rounded-full border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-medium text-white transition duration-200 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night">
+        {l}
+      </a>
+    ))}
+  </nav>
+)}
 </header>
 
       <section id="home" className="px-4 pb-20 pt-20 text-center">
