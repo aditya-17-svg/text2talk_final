@@ -164,7 +164,7 @@ export default function Landing() {
       <div className="flex flex-wrap gap-2 md:flex-col md:items-start">
         {[['Features', '#features'], ['How It Works', '#how-it-works'], ['Pricing', '#pricing']].map(([l, h]) => (
           <a key={l} href={h}
-            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0"
+            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0"></a>
             {l}
           </a>
         ))}
@@ -176,7 +176,7 @@ export default function Landing() {
       <div className="flex flex-wrap gap-2 md:flex-col md:items-start">
         {[['Privacy Policy', '/privacy'], ['Terms of Service', '/terms'], ['Contact', '/contact']].map(([l, h]) => (
           <Link key={l} to={h}
-            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0"
+            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0"></Link>
             {l}
           </Link>
         ))}
