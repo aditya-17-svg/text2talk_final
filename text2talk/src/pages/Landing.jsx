@@ -123,20 +123,34 @@ export default function Landing() {
         <Link to="/register" className="btn-primary mt-8 px-8 py-3">Create your free account</Link></div></section>
 
       <footer className="bg-gradient-to-b from-night to-brand-500 px-4 pb-8 pt-14 text-white">
-  <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-4">
+  <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-4">
     <div className="md:col-span-2">
       <p className="text-lg font-bold">text2talk</p>
       <p className="mt-2 max-w-xs text-sm text-white/75">A little less between you and what you mean to say.</p>
     </div>
-    <div className="text-sm">
-      <p className="mb-2 font-bold">Product</p>
-      {[['Features', '#features'], ['How It Works', '#how-it-works'], ['Pricing', '#pricing']].map(([l, h]) =>
-        <a key={l} href={h} className="block py-1 text-white/75 hover:text-white">{l}</a>)}
+
+    <div>
+      <p className="mb-3 text-sm font-bold">Product</p>
+      <div className="flex flex-wrap gap-2 md:flex-col md:items-start">
+        {[['Features', '#features'], ['How It Works', '#how-it-works'], ['Pricing', '#pricing']].map(([l, h]) => (
+          <a key={l} href={h}
+            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-brand-700 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+            {l}
+          </a>
+        ))}
+      </div>
     </div>
-    <div className="text-sm">
-      <p className="mb-2 font-bold">Company</p>
-      {[['Privacy Policy', '/privacy'], ['Terms of Service', '/terms'], ['Contact', '/contact']].map(([l, h]) =>
-        <Link key={l} to={h} className="block py-1 text-white/75 hover:text-white">{l}</Link>)}
+
+    <div>
+      <p className="mb-3 text-sm font-bold">Company</p>
+      <div className="flex flex-wrap gap-2 md:flex-col md:items-start">
+        {[['Privacy Policy', '/privacy'], ['Terms of Service', '/terms'], ['Contact', '/contact']].map(([l, h]) => (
+          <Link key={l} to={h}
+            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-brand-700 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+            {l}
+          </Link>
+        ))}
+      </div>
     </div>
   </div>
   <p className="mx-auto mt-10 max-w-6xl border-t border-white/20 pt-6 text-xs text-white/70">© 2026 Text2Talk</p>
