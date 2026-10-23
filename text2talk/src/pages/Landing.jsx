@@ -48,18 +48,48 @@ export default function Landing() {
   const [open, setOpen] = useState(false)
   return (
     <div>
-      <header className="sticky top-0 z-30 border-b border-brand-100 bg-white/85 backdrop-blur dark:bg-slate-950/85">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link to="/" className="flex items-center gap-2 text-lg font-bold"><span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-500 text-white"><Mic size={16} /></span>text2talk</Link>
-          <nav className="hidden gap-8 text-sm font-medium md:flex" aria-label="Primary">{NAV.map(([l, h]) => <a key={l} href={h} className="text-slate-600 hover:text-brand-600">{l}</a>)}</nav>
-          <div className="flex items-center gap-2">
-            <Link to="/login" className="hidden px-3 text-sm font-semibold sm:block">Sign In</Link>
-            <Link to="/register" className="btn-primary">Get Started</Link>
-            <button className="md:hidden" aria-label="Menu" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
-          </div>
-        </div>
-        {open && <nav className="border-t border-brand-100 p-4 md:hidden">{[...NAV, ['Sign In', '/login']].map(([l, h]) => <a key={l} href={h} onClick={() => setOpen(false)} className="block py-2 font-medium">{l}</a>)}</nav>}
-      </header>
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-night text-white shadow-lg shadow-black/10">
+  <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+    <Link to="/" className="flex items-center gap-2 text-lg font-bold">
+      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-500 text-white"><Mic size={16} /></span>
+      text2talk
+    </Link>
+
+    <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+      {NAV.map(([l, h]) => (
+        <a key={l} href={h}
+          className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition duration-200 hover:-translate-y-0.5 hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+          {l}
+        </a>
+      ))}
+    </nav>
+
+    <div className="flex items-center gap-2">
+      <Link to="/login"
+        className="hidden rounded-full border border-white/30 px-5 py-2 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:block">
+        Sign In
+      </Link>
+      <Link to="/register"
+        className="group rounded-full bg-white px-5 py-2 text-sm font-semibold text-brand-700 shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-brand-100 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+        Get Started <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
+      </Link>
+      <button className="rounded-full p-2 hover:bg-white/15 md:hidden" aria-label="Menu" onClick={() => setOpen(!open)}>
+        {open ? <X /> : <Menu />}
+      </button>
+    </div>
+  </div>
+
+  {open && (
+    <nav className="space-y-2 border-t border-white/10 bg-night p-4 md:hidden">
+      {[...NAV, ['Sign In', '/login']].map(([l, h]) => (
+        <a key={l} href={h} onClick={() => setOpen(false)}
+          className="block rounded-full bg-white/10 px-4 py-2.5 text-sm font-medium transition hover:bg-white hover:text-brand-700">
+          {l}
+        </a>
+      ))}
+    </nav>
+  )}
+</header>
 
       <section id="home" className="px-4 pb-20 pt-20 text-center">
         <p className="eyebrow">Your voice. A little more possibility.</p>
@@ -134,7 +164,7 @@ export default function Landing() {
       <div className="flex flex-wrap gap-2 md:flex-col md:items-start">
         {[['Features', '#features'], ['How It Works', '#how-it-works'], ['Pricing', '#pricing']].map(([l, h]) => (
           <a key={l} href={h}
-            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-brand-700 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0"
             {l}
           </a>
         ))}
@@ -146,7 +176,7 @@ export default function Landing() {
       <div className="flex flex-wrap gap-2 md:flex-col md:items-start">
         {[['Privacy Policy', '/privacy'], ['Terms of Service', '/terms'], ['Contact', '/contact']].map(([l, h]) => (
           <Link key={l} to={h}
-            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-brand-700 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+            className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0"
             {l}
           </Link>
         ))}
