@@ -166,7 +166,7 @@ export default function Landing() {
           <a key={l} href={h}
             className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
             {l}
-            </a>
+            
           </a>
         ))}
       </div>
@@ -179,7 +179,7 @@ export default function Landing() {
           <Link key={l} to={h}
             className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-[#ff9a8b] hover:bg-[#ff9a8b] hover:text-night hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
             {l}
-            </Link>
+            
           </Link>
         ))}
       </div>
