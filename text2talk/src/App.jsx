@@ -6,6 +6,7 @@ import { Layout, Overview, Settings_ } from './pages/Dashboard'
 import SpeechToText from './features/stt/SpeechToText'
 import TextToSpeech from './features/tts/TextToSpeech'
 import History from './pages/History'
+import { Privacy, Terms, Contact } from './pages/Legal'
 
 export default function App() {
   return (
@@ -15,6 +16,9 @@ export default function App() {
         <Route path="/login" element={<PublicOnly><Login /></PublicOnly>} />
         <Route path="/register" element={<PublicOnly><Register /></PublicOnly>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/app" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Overview />} />
           <Route path="speech-to-text" element={<SpeechToText />} />
