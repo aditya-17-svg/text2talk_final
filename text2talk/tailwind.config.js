@@ -4,11 +4,10 @@ export default {
   theme: { extend: {
     fontFamily: { sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'] },
     colors: {
-      // Palette: navy #354d81, cream #faefe2, tan #b29d7e, sage #949f7b, white
-      brand: { 50: '#faefe2', 100: '#e6d9c6', 500: '#354d81', 600: '#2d4170', 700: '#27345e' },
-      ink: '#1c2644', night: '#27345e',
-      tan: '#b29d7e', sage: '#949f7b',
-      cream: { 100: '#ffffff', 200: '#faefe2' },
+      // Palette: deep navy #111844, indigo #4B5694, steel #7288AE, beige #EAE0CF
+      brand: { 50: '#f3ecdf', 100: '#d8ccb6', 500: '#4b5694', 600: '#3f4982', 700: '#2c3567' },
+      ink: '#111844', night: '#111844', steel: '#7288ae',
+      cream: { 100: '#fbf8f2', 200: '#eae0cf' },
     },
   } },
 }
