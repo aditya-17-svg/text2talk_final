@@ -31,10 +31,10 @@ export default function Listen() {
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Listen to a File</h1>
       <label onDragOver={e => { e.preventDefault(); setDrag(true) }} onDragLeave={() => setDrag(false)} onDrop={onDrop}
-        className={`flex cursor-pointer flex-col items-center gap-2 rounded-3xl border-2 border-dashed p-10 text-center transition ${drag ? 'border-night bg-[#ff7a7a]' : 'border-night/40 bg-[#ff9a8b] hover:bg-[#ff8f80]'} text-night`}>
-        <UploadCloud className="text-night" size={32} />
+        className={`flex cursor-pointer flex-col items-center gap-2 rounded-3xl border-2 border-dashed p-10 text-center transition ${drag ? 'border-night bg-[#9d8868]' : 'border-night/40 bg-[#b29d7e] hover:bg-[#a69172]'} text-ink`}>
+        <UploadCloud className="text-ink" size={32} />
         <span className="font-semibold">Drag and drop a file here, or click to choose</span>
-        <span className="text-xs text-night/75">.txt, .md, .docx (read aloud) · mp3, wav, m4a (played) · up to {MAX_MB} MB</span>
+        <span className="text-xs text-ink/75">.txt, .md, .docx (read aloud) · mp3, wav, m4a (played) · up to {MAX_MB} MB</span>
         <input type="file" className="sr-only" accept=".txt,.md,.csv,.json,.rtf,.docx,audio/*" onChange={e => load(e.target.files?.[0])} />
       </label>
       {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
