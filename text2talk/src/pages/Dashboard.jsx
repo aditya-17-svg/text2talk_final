@@ -24,12 +24,12 @@ export function Layout() {
     </nav>)
   return (
     <div className="min-h-screen md:flex">
-      <header className="flex items-center justify-between border-b border-[#9d8868] bg-[#b29d7e] p-4 text-ink md:hidden">
+      <header className="flex items-center justify-between border-b border-[#8fa1c2] bg-[#7288ae] p-4 text-ink md:hidden">
         <Link to="/app" className="font-bold">Text2Talk</Link>
         <button aria-label="Open menu" onClick={() => setOpen(true)}><Menu /></button>
       </header>
       {open && <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setOpen(false)} />}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform overflow-y-auto bg-[#b29d7e] p-4 text-ink transition md:static md:translate-x-0 md:border-r md:border-[#9d8868] ${open ? '' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform overflow-y-auto bg-[#7288ae] p-4 text-ink transition md:static md:translate-x-0 md:border-r md:border-[#8fa1c2] ${open ? '' : '-translate-x-full'}`}>
         <div className="mb-6 flex items-center justify-between"><span className="flex items-center gap-2 font-bold"><Mic className="text-ink" />Text2Talk</span><button className="md:hidden" aria-label="Close menu" onClick={() => setOpen(false)}><X /></button></div>
         {links}
       </aside>
@@ -48,7 +48,7 @@ export function Overview() {
       <h1 className="text-2xl font-bold">Welcome, {name} 👋</h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {widgets.map(([to, t, d, Icon]) => (
-          <Link key={to} to={to} className="rounded-3xl border border-[#b29d7e] bg-[#b29d7e] p-6 text-ink shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#9d8868] hover:bg-[#9d8868] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night">
+          <Link key={to} to={to} className="rounded-3xl border border-[#7288ae] bg-[#7288ae] p-6 text-ink shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#8fa1c2] hover:bg-[#8fa1c2] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night">
             <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/50"><Icon size={20} /></span>
             <h2 className="font-bold">{t}</h2><p className="mt-1 text-sm text-ink/75">{d}</p>
           </Link>))}
