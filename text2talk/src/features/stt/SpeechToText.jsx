@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Mic, Square, Copy, Download, Save, Trash2 } from 'lucide-react'
+import DownloadMenu from '../../components/DownloadMenu'
 import { useSpeechRecognition } from './useSpeechRecognition'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../auth/AuthContext'
@@ -36,7 +37,7 @@ export default function SpeechToText() {
         <textarea aria-label="Transcript" className="input min-h-[240px]" placeholder="Your transcript will appear here…" value={s.final + s.interim} onChange={e => s.setFinal(e.target.value)} />
         <div className="flex flex-wrap gap-2">
           <button className="btn-ghost" onClick={() => navigator.clipboard.writeText(s.final)}><Copy size={16} /> Copy</button>
-          <button className="btn-ghost" onClick={download} disabled={!s.final}><Download size={16} /> TXT</button>
+          <DownloadMenu text={s.final} title={s.final.slice(0, 40) || 'transcript'} disabled={!s.final} />
           <button className="btn-primary" onClick={save} disabled={!s.final}><Save size={16} /> Save</button>
           <button className="btn-ghost" onClick={s.reset}><Trash2 size={16} /> Clear</button>
         </div>
