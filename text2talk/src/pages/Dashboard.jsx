@@ -1,6 +1,7 @@
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon, Languages, Upload, LifeBuoy } from 'lucide-react'
+import Logo from '../components/Logo'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../features/auth/AuthContext'
 
@@ -25,12 +26,12 @@ export function Layout() {
   return (
     <div className="min-h-screen md:flex">
       <header className="flex items-center justify-between border-b border-[#8fa1c2] bg-[#7288ae] p-4 text-ink md:hidden">
-        <Link to="/app" className="font-bold">Text2Talk</Link>
+        <Logo to="/app" box="#111844" glyph="#eae0cf" bars="#7288ae" two="text-white" textClass="text-ink" />
         <button aria-label="Open menu" onClick={() => setOpen(true)}><Menu /></button>
       </header>
       {open && <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setOpen(false)} />}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform overflow-y-auto bg-[#7288ae] p-4 text-ink transition md:static md:translate-x-0 md:border-r md:border-[#8fa1c2] ${open ? '' : '-translate-x-full'}`}>
-        <div className="mb-6 flex items-center justify-between"><span className="flex items-center gap-2 font-bold"><Mic className="text-ink" />Text2Talk</span><button className="md:hidden" aria-label="Close menu" onClick={() => setOpen(false)}><X /></button></div>
+        <div className="mb-6 flex items-center justify-between"><Logo to="/app" box="#111844" glyph="#eae0cf" bars="#7288ae" two="text-white" textClass="text-ink" /><button className="md:hidden" aria-label="Close menu" onClick={() => setOpen(false)}><X /></button></div>
         {links}
       </aside>
       <main className="flex-1 p-4 md:p-8"><div className="mx-auto max-w-5xl"><Outlet /></div></main>
