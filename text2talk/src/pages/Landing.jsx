@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Logo from '../components/Logo'
 import { Mic, Volume2, Globe, UserRound, FileText, History, Accessibility, ShieldCheck, ChevronDown } from 'lucide-react'
 
 // Palette: navy, cream, tan (buttons), steel (bands), white (cards)
@@ -54,7 +55,7 @@ export default function Landing() {
     <div>
       <header className="sticky top-0 z-30 border-b border-white/10 bg-night text-white shadow-lg shadow-black/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link to="/" className="flex items-center gap-2 text-lg font-bold"><span className="flex h-8 w-8 items-center justify-center rounded-xl bg-steel text-ink"><Mic size={16} /></span>text2talk</Link>
+          <Logo />
           <div className="flex items-center gap-2">
             <Link to="/login" className={`${PEACH} px-5 py-2 text-sm font-semibold`}>Sign In</Link>
             <Link to="/register" className="group rounded-full border border-white bg-white px-5 py-2 text-sm font-semibold text-brand-700 shadow-md transition duration-200 hover:-translate-y-0.5 hover:border-steel hover:bg-steel hover:text-ink hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
@@ -129,7 +130,7 @@ export default function Landing() {
 
       <footer className="bg-gradient-to-b from-night to-brand-500 px-4 pb-8 pt-14 text-white">
         <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-4">
-          <div className="md:col-span-2"><p className="text-lg font-bold">text2talk</p><p className="mt-2 max-w-xs text-sm text-white/75">A little less between you and what you mean to say.</p></div>
+          <div className="md:col-span-2"><Logo /><p className="mt-2 max-w-xs text-sm text-white/75">A little less between you and what you mean to say.</p></div>
           <div><p className="mb-3 text-sm font-bold">Product</p><div className="flex flex-wrap gap-2 md:flex-col md:items-start">
             {[['Features', '#features'], ['How It Works', '#how-it-works'], ['Pricing', '#pricing']].map(([l, h]) => <a key={l} href={h} className={`${PEACH} px-4 py-2 text-sm font-medium`}>{l}</a>)}</div></div>
           <div><p className="mb-3 text-sm font-bold">Company</p><div className="flex flex-wrap gap-2 md:flex-col md:items-start">
