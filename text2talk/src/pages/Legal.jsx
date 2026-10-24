@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import Logo from '../components/Logo'
 import { Mic, ArrowLeft } from 'lucide-react'
 
 // TODO: replace with your real support address
@@ -12,7 +13,7 @@ function Page({ title, children }) {
       <div className="mx-auto max-w-3xl">
         <Link to="/" className="mb-6 flex items-center gap-2 text-sm font-semibold text-brand-600"><ArrowLeft size={16} /> Back to home</Link>
         <article className="card space-y-5 p-8">
-          <p className="flex items-center gap-2 font-bold"><span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-500 text-white"><Mic size={16} /></span>text2talk</p>
+          <Logo textClass="text-ink" two="text-brand-500" />
           <h1 className="text-3xl font-extrabold tracking-tight">{title}</h1>
           {children}
         </article>
