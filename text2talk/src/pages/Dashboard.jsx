@@ -1,10 +1,11 @@
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon } from 'lucide-react'
+import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon, Languages, Upload } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../features/auth/AuthContext'
 
 const nav = [['/app', 'Overview', LayoutDashboard, true], ['/app/speech-to-text', 'Speech-to-Text', Mic], ['/app/text-to-speech', 'Text-to-Speech', Volume2],
+  ['/app/translate', 'Translate', Languages], ['/app/listen', 'Listen to File', Upload],
   ['/app/transcripts', 'My Transcripts', FileText], ['/app/audio', 'Audio History', Headphones], ['/app/favorites', 'Favorites', Star], ['/app/settings', 'Settings', Settings]]
 
 export function Layout() {
