@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Mic, Volume2, Globe, UserRound, FileText, History, Accessibility, ShieldCheck, ChevronDown } from 'lucide-react'
 
-// Palette: navy, cream, tan (buttons), sage (bands), white (cards)
-const PEACH = 'rounded-full border border-tan bg-tan text-ink transition duration-200 hover:-translate-y-0.5 hover:border-sage hover:bg-sage hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0'
-const CARD = 'rounded-3xl border border-brand-100 bg-white p-6 text-ink shadow-[0_8px_30px_rgba(53,77,129,0.10)]'
-const BAND = 'bg-sage text-ink'
+// Palette: navy, cream, tan (buttons), steel (bands), white (cards)
+const PEACH = 'rounded-full border border-steel bg-steel text-ink transition duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0'
+const CARD = 'rounded-3xl border border-brand-100 bg-white p-6 text-ink shadow-[0_8px_30px_rgba(17,24,68,0.10)]'
+const BAND = 'bg-steel text-ink'
 const EYEBROW_L = 'text-xs font-semibold uppercase tracking-widest text-night'
 
 const PHRASE = "Let's make a little room for the big idea. Coffee tomorrow at 10?"
@@ -20,7 +20,7 @@ const FAQ = [['What is Text2Talk?', 'A web app that turns your speech into edita
   ['What happens to my voice?', 'Text2Talk does not store raw audio. Browser speech recognition may send audio to your browser vendor’s service. Only transcripts you choose to save are stored.'],
   ['Is it free?', 'Yes, Text2Talk is free during early access.']]
 
-function Wave({ n = 26, color = 'bg-sage' }) {
+function Wave({ n = 26, color = 'bg-steel' }) {
   return <div className="flex h-10 items-center gap-[3px]" aria-hidden="true">{Array.from({ length: n }, (_, i) =>
     <span key={i} className={`bar w-[3px] rounded-full ${color}`} style={{ height: `${30 + ((i * 53) % 70)}%`, animationDelay: `${(i % 9) * 90}ms` }} />)}</div>
 }
@@ -32,13 +32,13 @@ function Demo() {
     return () => clearInterval(t)
   }, [])
   return (
-    <div className="mx-auto mt-14 max-w-2xl rounded-3xl bg-sage p-4 sm:p-6">
+    <div className="mx-auto mt-14 max-w-2xl rounded-3xl bg-steel p-4 sm:p-6">
       <div className={`${CARD} text-left`}>
-        <p className="text-xs text-slate-500">Message to Alex</p>
+        <p className="text-xs text-slate-500">Messteel to Alex</p>
         <p className="mt-2 min-h-[56px] text-lg font-medium" aria-live="off">{PHRASE.slice(0, n)}<span className="ml-0.5 inline-block h-5 w-0.5 translate-y-1 bg-brand-500" /></p>
         <div className="mt-4 flex items-center gap-3 rounded-full bg-night px-4 py-2 text-white">
           <Wave n={22} /><span className="text-xs text-white/80">Listening…</span>
-          <span className="ml-auto flex h-7 w-7 items-center justify-center rounded-full bg-tan text-ink"><Mic size={14} /></span>
+          <span className="ml-auto flex h-7 w-7 items-center justify-center rounded-full bg-steel text-ink"><Mic size={14} /></span>
         </div>
       </div>
       <p className="mt-3 text-center text-xs text-ink/80">Illustrative demo. The real tool runs in your workspace.</p>
@@ -54,10 +54,10 @@ export default function Landing() {
     <div>
       <header className="sticky top-0 z-30 border-b border-white/10 bg-night text-white shadow-lg shadow-black/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link to="/" className="flex items-center gap-2 text-lg font-bold"><span className="flex h-8 w-8 items-center justify-center rounded-xl bg-sage text-ink"><Mic size={16} /></span>text2talk</Link>
+          <Link to="/" className="flex items-center gap-2 text-lg font-bold"><span className="flex h-8 w-8 items-center justify-center rounded-xl bg-steel text-ink"><Mic size={16} /></span>text2talk</Link>
           <div className="flex items-center gap-2">
             <Link to="/login" className={`${PEACH} px-5 py-2 text-sm font-semibold`}>Sign In</Link>
-            <Link to="/register" className="group rounded-full border border-white bg-white px-5 py-2 text-sm font-semibold text-brand-700 shadow-md transition duration-200 hover:-translate-y-0.5 hover:border-sage hover:bg-sage hover:text-ink hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
+            <Link to="/register" className="group rounded-full border border-white bg-white px-5 py-2 text-sm font-semibold text-brand-700 shadow-md transition duration-200 hover:-translate-y-0.5 hover:border-steel hover:bg-steel hover:text-ink hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0">
               Get Started <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span></Link>
           </div>
         </div>
@@ -122,10 +122,10 @@ export default function Landing() {
         <div>{FAQ.map(([q, a]) => <Faq key={q} q={q} a={a} />)}</div>
       </section>
 
-      <section className="px-4 pb-24 text-center"><div className="mx-auto max-w-3xl rounded-[2rem] bg-sage px-6 py-16 text-ink">
+      <section className="px-4 pb-24 text-center"><div className="mx-auto max-w-3xl rounded-[2rem] bg-steel px-6 py-16 text-ink">
         <div className="flex justify-center"><Wave n={32} color="bg-night" /></div>
         <h2 className="mt-6 text-4xl font-extrabold tracking-tight">Your next good thought is one click away.</h2>
-        <Link to="/register" className={`${PEACH} mt-8 inline-flex px-8 py-3 text-sm font-semibold shadow-md`}>Create your free account</Link></div></section>
+        <Link to="/register" className={`mt-8 inline-flex rounded-full bg-night px-8 py-3 text-sm font-semibold text-white shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-brand-500 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night`}>Create your free account</Link></div></section>
 
       <footer className="bg-gradient-to-b from-night to-brand-500 px-4 pb-8 pt-14 text-white">
         <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-4">
