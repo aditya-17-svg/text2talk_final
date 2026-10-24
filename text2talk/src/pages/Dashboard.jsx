@@ -1,6 +1,6 @@
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon, Languages, Upload } from 'lucide-react'
+import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon, Languages, Upload, LifeBuoy } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../features/auth/AuthContext'
 
@@ -8,30 +8,37 @@ const nav = [['/app', 'Overview', LayoutDashboard, true], ['/app/speech-to-text'
   ['/app/translate', 'Translate', Languages], ['/app/listen', 'Listen to File', Upload],
   ['/app/transcripts', 'My Transcripts', FileText], ['/app/audio', 'Audio History', Headphones], ['/app/favorites', 'Favorites', Star], ['/app/settings', 'Settings', Settings]]
 
+// Sidebar buttons: soft white pills on peach, dark purple for the current page
+const pill = 'flex w-full items-center gap-3 rounded-full border border-white/40 bg-white/30 px-4 py-2.5 text-sm font-medium text-night transition duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night active:translate-y-0'
+const pillActive = 'flex w-full items-center gap-3 rounded-full border border-night bg-night px-4 py-2.5 text-sm font-semibold text-white shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night'
+
 export function Layout() {
   const [open, setOpen] = useState(false); const navigate = useNavigate()
   const logout = async () => { await supabase.auth.signOut(); navigate('/login') }
   const links = (
-    <nav className="space-y-1" aria-label="Main">
+    <nav className="space-y-2" aria-label="Main">
       {nav.map(([to, label, Icon, end]) => (
-        <NavLink key={to} to={to} end={end} onClick={() => setOpen(false)} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2 text-sm ${isActive ? 'bg-brand-50 font-medium text-brand-700' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'}`}><Icon size={18} />{label}</NavLink>))}
-      <a href="mailto:support@example.com" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-slate-600">Help and Support</a>
-      <button onClick={logout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-slate-600 hover:bg-slate-100"><LogOut size={18} />Logout</button>
+        <NavLink key={to} to={to} end={end} onClick={() => setOpen(false)} className={({ isActive }) => (isActive ? pillActive : pill)}><Icon size={18} />{label}</NavLink>))}
+      <Link to="/contact" onClick={() => setOpen(false)} className={pill}><LifeBuoy size={18} />Help and Support</Link>
+      <button onClick={logout} className={pill}><LogOut size={18} />Logout</button>
     </nav>)
   return (
     <div className="min-h-screen md:flex">
-      <header className="flex items-center justify-between border-b bg-white p-4 md:hidden dark:bg-slate-900">
-        <Link to="/app" className="font-semibold">Text2Talk</Link>
+      <header className="flex items-center justify-between border-b border-[#ff7a7a] bg-[#ff9a8b] p-4 text-night md:hidden">
+        <Link to="/app" className="font-bold">Text2Talk</Link>
         <button aria-label="Open menu" onClick={() => setOpen(true)}><Menu /></button>
       </header>
       {open && <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setOpen(false)} />}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-white p-4 transition dark:bg-slate-900 md:static md:translate-x-0 md:border-r ${open ? '' : '-translate-x-full'}`}>
-        <div className="mb-6 flex items-center justify-between"><span className="flex items-center gap-2 font-semibold"><Mic className="text-brand-600" />Text2Talk</span><button className="md:hidden" aria-label="Close menu" onClick={() => setOpen(false)}><X /></button></div>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform overflow-y-auto bg-[#ff9a8b] p-4 text-night transition md:static md:translate-x-0 md:border-r md:border-[#ff7a7a] ${open ? '' : '-translate-x-full'}`}>
+        <div className="mb-6 flex items-center justify-between"><span className="flex items-center gap-2 font-bold"><Mic className="text-night" />Text2Talk</span><button className="md:hidden" aria-label="Close menu" onClick={() => setOpen(false)}><X /></button></div>
         {links}
       </aside>
-      <main className="flex-1 p-4 md:p-8"><div className="mx-auto max-w-4xl"><Outlet /></div></main>
+      <main className="flex-1 p-4 md:p-8"><div className="mx-auto max-w-5xl"><Outlet /></div></main>
     </div>)
 }
+
+const widgets = [['/app/speech-to-text', 'Speech-to-Text', 'Dictate and transcribe in real time.', Mic], ['/app/text-to-speech', 'Text-to-Speech', 'Hear your text read aloud.', Volume2],
+  ['/app/translate', 'Language Conversion', 'Translate text from one language to another.', Languages]]
 
 export function Overview() {
   const { user } = useAuth()
@@ -39,9 +46,12 @@ export function Overview() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Welcome, {name} 👋</h1>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Link to="/app/speech-to-text" className="card hover:border-brand-500"><Mic className="mb-2 text-brand-600" /><h2 className="font-semibold">Speech-to-Text</h2><p className="text-sm text-slate-500">Dictate and transcribe in real time.</p></Link>
-        <Link to="/app/text-to-speech" className="card hover:border-brand-500"><Volume2 className="mb-2 text-brand-600" /><h2 className="font-semibold">Text-to-Speech</h2><p className="text-sm text-slate-500">Hear your text read aloud.</p></Link>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {widgets.map(([to, t, d, Icon]) => (
+          <Link key={to} to={to} className="rounded-3xl border border-[#ff9a8b] bg-[#ff9a8b] p-6 text-night shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#ff7a7a] hover:bg-[#ff7a7a] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night">
+            <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/50"><Icon size={20} /></span>
+            <h2 className="font-bold">{t}</h2><p className="mt-1 text-sm text-night/75">{d}</p>
+          </Link>))}
       </div>
     </div>)
 }
