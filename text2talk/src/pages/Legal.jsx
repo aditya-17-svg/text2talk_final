@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Mic, ArrowLeft } from 'lucide-react'
 
-
+// TODO: replace with your real support address
 export const CONTACT_EMAIL = 'hello@your-domain.com'
 const UPDATED = 'October 23, 2026'
 
@@ -36,6 +36,8 @@ export function Privacy() {
         'Basic technical data processed by our hosting provider (Vercel) and database provider (Supabase), such as IP address and request logs.']} />
       <H>Your voice and audio</H>
       <P>Text2Talk does not record or store your raw audio. Speech-to-text uses your browser’s built-in speech recognition. Depending on your browser, your audio may be sent to the browser vendor’s speech service (for example Google for Chrome) to produce text. That processing is governed by the vendor’s own privacy policy. We ask for your consent before you use the microphone.</P>
+      <H>Translation</H>
+      <P>When you use the Translate tool, the text you enter is sent to a third-party translation service (MyMemory) and the translation is returned to you. Text2Talk does not store translated text unless you save it elsewhere. Please do not translate sensitive information.</P>
       <H>How we use data</H>
       <L items={['To run the service: sign you in and show your saved items.', 'To keep your account secure and prevent abuse.', 'To reply to your messages.']} />
       <P>We do not sell your personal data and we do not show ads.</P>
