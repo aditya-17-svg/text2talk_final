@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, Mic } from 'lucide-react'
+import Logo from '../../components/Logo'
 import { supabase, isConfigured } from '../../lib/supabase'
 
 const password = z.string().min(8, 'At least 8 characters').regex(/[A-Z]/, 'Add an uppercase letter').regex(/[0-9]/, 'Add a number')
@@ -19,7 +20,7 @@ function Shell({ title, children, footer }) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 to-white p-4 dark:from-slate-950 dark:to-slate-900">
       <div className="card w-full max-w-md">
-        <Link to="/" className="mb-6 flex items-center gap-2 font-semibold"><Mic className="text-brand-600" /> Text2Talk</Link>
+        <div className="mb-6"><Logo textClass="text-ink" two="text-brand-500" /></div>
         <h1 className="mb-4 text-2xl font-bold">{title}</h1>
         {!isConfigured && <p role="alert" className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">Supabase is not configured. Copy .env.example to .env and add your keys.</p>}
         {children}<div className="mt-4 text-center text-sm text-slate-500">{footer}</div>
