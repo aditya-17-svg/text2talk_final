@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Play, Pause, Square, Copy, Save, Trash2 } from 'lucide-react'
+import DownloadMenu from '../../components/DownloadMenu'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../auth/AuthContext'
 
@@ -53,6 +54,7 @@ export default function TextToSpeech() {
             : <button className="btn-primary" onClick={play} disabled={!text.trim()}><Play size={16} /> Play</button>}
           <button className="btn-ghost" onClick={stop}><Square size={16} /> Stop</button>
           <button className="btn-ghost" onClick={() => navigator.clipboard.writeText(text)}><Copy size={16} /> Copy</button>
+          <DownloadMenu text={text} title="speech-text" disabled={!text.trim()} />
           <button className="btn-ghost" onClick={save} disabled={!text.trim()}><Save size={16} /> Save</button>
           <button className="btn-ghost" onClick={() => setText('')}><Trash2 size={16} /> Clear</button>
         </div>
