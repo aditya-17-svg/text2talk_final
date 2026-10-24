@@ -6,6 +6,8 @@ import { Layout, Overview, Settings_ } from './pages/Dashboard'
 import SpeechToText from './features/stt/SpeechToText'
 import TextToSpeech from './features/tts/TextToSpeech'
 import History from './pages/History'
+import Translate from './pages/Translate'
+import Listen from './pages/Listen'
 import { Privacy, Terms, Contact } from './pages/Legal'
 
 export default function App() {
@@ -23,6 +25,8 @@ export default function App() {
           <Route index element={<Overview />} />
           <Route path="speech-to-text" element={<SpeechToText />} />
           <Route path="text-to-speech" element={<TextToSpeech />} />
+          <Route path="translate" element={<Translate />} />
+          <Route path="listen" element={<Listen />} />
           <Route path="transcripts" element={<History table="transcripts" field="content" title="My Transcripts" />} />
           <Route path="audio" element={<History table="audio_generations" field="input_text" title="Audio History" />} />
           <Route path="favorites" element={<History table="transcripts" field="content" title="Favorite Transcripts" favoritesOnly />} />
