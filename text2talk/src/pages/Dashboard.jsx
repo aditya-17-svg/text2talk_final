@@ -9,7 +9,7 @@ const nav = [['/app', 'Overview', LayoutDashboard, true], ['/app/speech-to-text'
   ['/app/transcripts', 'My Transcripts', FileText], ['/app/audio', 'Audio History', Headphones], ['/app/favorites', 'Favorites', Star], ['/app/settings', 'Settings', Settings]]
 
 // Sidebar buttons: soft white pills on peach, dark purple for the current page
-const pill = 'flex w-full items-center gap-3 rounded-full border border-white/40 bg-white/30 px-4 py-2.5 text-sm font-medium text-night transition duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night active:translate-y-0'
+const pill = 'flex w-full items-center gap-3 rounded-full border border-white/40 bg-white/30 px-4 py-2.5 text-sm font-medium text-ink transition duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night active:translate-y-0'
 const pillActive = 'flex w-full items-center gap-3 rounded-full border border-night bg-night px-4 py-2.5 text-sm font-semibold text-white shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night'
 
 export function Layout() {
@@ -24,13 +24,13 @@ export function Layout() {
     </nav>)
   return (
     <div className="min-h-screen md:flex">
-      <header className="flex items-center justify-between border-b border-[#ff7a7a] bg-[#ff9a8b] p-4 text-night md:hidden">
+      <header className="flex items-center justify-between border-b border-[#9d8868] bg-[#b29d7e] p-4 text-ink md:hidden">
         <Link to="/app" className="font-bold">Text2Talk</Link>
         <button aria-label="Open menu" onClick={() => setOpen(true)}><Menu /></button>
       </header>
       {open && <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setOpen(false)} />}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform overflow-y-auto bg-[#ff9a8b] p-4 text-night transition md:static md:translate-x-0 md:border-r md:border-[#ff7a7a] ${open ? '' : '-translate-x-full'}`}>
-        <div className="mb-6 flex items-center justify-between"><span className="flex items-center gap-2 font-bold"><Mic className="text-night" />Text2Talk</span><button className="md:hidden" aria-label="Close menu" onClick={() => setOpen(false)}><X /></button></div>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform overflow-y-auto bg-[#b29d7e] p-4 text-ink transition md:static md:translate-x-0 md:border-r md:border-[#9d8868] ${open ? '' : '-translate-x-full'}`}>
+        <div className="mb-6 flex items-center justify-between"><span className="flex items-center gap-2 font-bold"><Mic className="text-ink" />Text2Talk</span><button className="md:hidden" aria-label="Close menu" onClick={() => setOpen(false)}><X /></button></div>
         {links}
       </aside>
       <main className="flex-1 p-4 md:p-8"><div className="mx-auto max-w-5xl"><Outlet /></div></main>
@@ -48,9 +48,9 @@ export function Overview() {
       <h1 className="text-2xl font-bold">Welcome, {name} 👋</h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {widgets.map(([to, t, d, Icon]) => (
-          <Link key={to} to={to} className="rounded-3xl border border-[#ff9a8b] bg-[#ff9a8b] p-6 text-night shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#ff7a7a] hover:bg-[#ff7a7a] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night">
+          <Link key={to} to={to} className="rounded-3xl border border-[#b29d7e] bg-[#b29d7e] p-6 text-ink shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#9d8868] hover:bg-[#9d8868] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night">
             <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/50"><Icon size={20} /></span>
-            <h2 className="font-bold">{t}</h2><p className="mt-1 text-sm text-night/75">{d}</p>
+            <h2 className="font-bold">{t}</h2><p className="mt-1 text-sm text-ink/75">{d}</p>
           </Link>))}
       </div>
     </div>)
