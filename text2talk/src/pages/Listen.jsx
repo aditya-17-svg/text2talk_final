@@ -31,7 +31,7 @@ export default function Listen() {
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Listen to a File</h1>
       <label onDragOver={e => { e.preventDefault(); setDrag(true) }} onDragLeave={() => setDrag(false)} onDrop={onDrop}
-        className={`flex cursor-pointer flex-col items-center gap-2 rounded-3xl border-2 border-dashed p-10 text-center transition ${drag ? 'border-night bg-[#9d8868]' : 'border-night/40 bg-[#b29d7e] hover:bg-[#a69172]'} text-ink`}>
+        className={`flex cursor-pointer flex-col items-center gap-2 rounded-3xl border-2 border-dashed p-10 text-center transition ${drag ? 'border-night bg-[#8fa1c2]' : 'border-night/40 bg-[#7288ae] hover:bg-[#8fa1c2]'} text-ink`}>
         <UploadCloud className="text-ink" size={32} />
         <span className="font-semibold">Drag and drop a file here, or click to choose</span>
         <span className="text-xs text-ink/75">.txt, .md, .docx (read aloud) · mp3, wav, m4a (played) · up to {MAX_MB} MB</span>
