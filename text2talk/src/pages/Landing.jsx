@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import SpeakTranslate from '../components/SpeakTranslate'
 import Logo from '../components/Logo'
 import { Mic, Volume2, Globe, UserRound, FileText, History, Accessibility, ShieldCheck, ChevronDown } from 'lucide-react'
 
@@ -71,6 +72,12 @@ export default function Landing() {
         <div className="mt-8 flex flex-wrap justify-center gap-3"><Link to="/register" className="btn-primary px-7 py-3">Start Converting</Link><Link to="/login" className={`${PEACH} px-7 py-3 text-sm font-semibold shadow-md`}>Try It Free</Link></div>
         <p className="mt-3 text-xs text-slate-500">Free to start · Works in your browser</p>
         <Demo />
+      </section>
+
+      <section id="try-it" className="mx-auto max-w-3xl px-4 pb-20">
+        <p className="eyebrow">Try it now</p><h2 className="mt-3 text-3xl font-extrabold tracking-tight">Speak, then translate.</h2>
+        <p className="mb-6 mt-2 text-slate-600">Talk into your microphone and get your words translated into another language.</p>
+        <SpeakTranslate />
       </section>
 
       <section className={`${BAND} px-4 py-24`}><div className="mx-auto max-w-5xl">
