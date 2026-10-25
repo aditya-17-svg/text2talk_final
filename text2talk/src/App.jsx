@@ -8,6 +8,7 @@ import TextToSpeech from './features/tts/TextToSpeech'
 import History from './pages/History'
 import Translate from './pages/Translate'
 import Listen from './pages/Listen'
+import Live from './pages/Live'
 import { Privacy, Terms, Contact } from './pages/Legal'
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="text-to-speech" element={<TextToSpeech />} />
           <Route path="translate" element={<Translate />} />
           <Route path="listen" element={<Listen />} />
+          <Route path="live" element={<Live />} />
           <Route path="transcripts" element={<History table="transcripts" field="content" title="My Transcripts" />} />
           <Route path="audio" element={<History table="audio_generations" field="input_text" title="Audio History" />} />
           <Route path="favorites" element={<History table="transcripts" field="content" title="Favorite Transcripts" favoritesOnly />} />
