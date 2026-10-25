@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, Mic } from 'lucide-react'
 import Logo from '../../components/Logo'
+import { SITE_URL } from '../../lib/site'
 import { supabase, isConfigured } from '../../lib/supabase'
 
 const password = z.string().min(8, 'At least 8 characters').regex(/[A-Z]/, 'Add an uppercase letter').regex(/[0-9]/, 'Add a number')
@@ -51,7 +52,7 @@ export function Login() {
     if (error) return setErr(error.message.includes('not confirmed') ? 'Please verify your email first.' : 'Invalid email or password.')
     nav('/app')
   }
-  const google = () => supabase?.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${location.origin}/app` } })
+  const google = () => supabase?.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${SITE_URL}/app` } })
   return (
     <Shell title="Welcome back" footer={<>No account? <Link className="text-brand-600" to="/register">Create one</Link></>}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -72,7 +73,7 @@ export function Register() {
   const onSubmit = async ({ fullName, email, password }) => {
     setErr('')
     if (!isConfigured) return setErr('Authentication is not configured.')
-    const { error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: fullName }, emailRedirectTo: `${location.origin}/app` } })
+    const { error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: fullName }, emailRedirectTo: `${SITE_URL}/app` } })
     if (error) return setErr('Could not create the account. Try a different email or try again later.')
     setDone(email)
   }
@@ -98,7 +99,7 @@ export function Register() {
 export function ForgotPassword() {
   const [sent, setSent] = useState(false)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(z.object({ email: z.string().email('Enter a valid email') })) })
-  const onSubmit = async ({ email }) => { await supabase?.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/app/settings` }); setSent(true) }
+  const onSubmit = async ({ email }) => { await supabase?.auth.resetPasswordForEmail(email, { redirectTo: `${SITE_URL}/app/settings` }); setSent(true) }
   return (
     <Shell title="Reset password" footer={<Link className="text-brand-600" to="/login">Back to Sign In</Link>}>
       {sent ? <p className="text-sm">If an account exists for that email, a reset link is on its way.</p> :
