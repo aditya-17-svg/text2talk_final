@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { UploadCloud, Play, Pause, Square } from 'lucide-react'
+import { UploadCloud, Play, Pause, Square, Save } from 'lucide-react'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../features/auth/AuthContext'
 import { speak, stopSpeaking, pauseSpeaking, resumeSpeaking, canSpeak } from '../lib/speak'
 import { LANGS } from '../features/stt/SpeechToText'
 
@@ -8,13 +10,14 @@ export default function Listen() {
   const [name, setName] = useState(''); const [text, setText] = useState(''); const [audio, setAudio] = useState('')
   const [err, setErr] = useState(''); const [drag, setDrag] = useState(false); const [state, setState] = useState('idle')
   const [lang, setLang] = useState('en-US'); const [rate, setRate] = useState(1); const urlRef = useRef('')
+  const { user } = useAuth(); const fileRef = useRef(null); const [msg, setMsg] = useState(''); const [saving, setSaving] = useState(false)
   useEffect(() => () => { stopSpeaking(); URL.revokeObjectURL(urlRef.current) }, [])
 
   const load = async f => {
-    setErr(''); stopSpeaking(); setState('idle'); setText(''); setAudio(''); URL.revokeObjectURL(urlRef.current)
+    setErr(''); setMsg(''); stopSpeaking(); setState('idle'); setText(''); setAudio(''); URL.revokeObjectURL(urlRef.current)
     if (!f) return
     if (f.size > MAX_MB * 1024 * 1024) return setErr(`File is too large. Maximum is ${MAX_MB} MB.`)
-    setName(f.name)
+    setName(f.name); fileRef.current = f
     try {
       if (f.type.startsWith('audio/')) { urlRef.current = URL.createObjectURL(f); setAudio(urlRef.current) }
       else if (/\.docx$/i.test(f.name)) {
@@ -23,6 +26,26 @@ export default function Listen() {
       } else if (f.type.startsWith('text/') || /\.(txt|md|csv|json|rtf)$/i.test(f.name)) setText(await f.text())
       else setErr('Unsupported file. Use .txt, .md, .docx or an audio file (mp3, wav, m4a).')
     } catch { setErr('Could not read that file.') }
+  }
+  // Text files are saved to Audio History; audio files go to private storage.
+  const save = async () => {
+    if (!user || saving) return
+    setSaving(true); setMsg('')
+    try {
+      if (audio) {
+        const f = fileRef.current
+        const path = `${user.id}/${crypto.randomUUID()}-${f.name.replace(/[^\w.\- ]+/g, '_')}`
+        const up = await supabase.storage.from('audio-files').upload(path, f, { contentType: f.type })
+        if (up.error) throw up.error
+        const { error } = await supabase.from('audio_generations').insert({ user_id: user.id, title: name.slice(0, 200), input_text: `Audio file: ${name}`.slice(0, 500), language: lang, audio_storage_path: path })
+        if (error) { await supabase.storage.from('audio-files').remove([path]); throw error }
+      } else {
+        if (text.length > 20000) throw new Error('This file is too long to save (limit 20,000 characters).')
+        const { error } = await supabase.from('audio_generations').insert({ user_id: user.id, title: name.slice(0, 200), input_text: text, language: lang, speech_rate: rate })
+        if (error) throw error
+      }
+      setMsg('Saved to Audio History.')
+    } catch (e) { setMsg(`Could not save: ${e.message || 'unknown error'}`) } finally { setSaving(false) }
   }
   const onDrop = e => { e.preventDefault(); setDrag(false); load(e.dataTransfer.files?.[0]) }
   const play = () => { setState('playing'); speak(text, { lang, rate, onEnd: () => setState('idle') }) }
@@ -38,7 +61,8 @@ export default function Listen() {
         <input type="file" className="sr-only" accept=".txt,.md,.csv,.json,.rtf,.docx,audio/*" onChange={e => load(e.target.files?.[0])} />
       </label>
       {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
-      {audio && <div className="card"><p className="mb-2 text-sm font-medium">{name}</p><audio controls src={audio} className="w-full" /></div>}
+      {audio && <div className="card"><p className="mb-2 text-sm font-medium">{name}</p><audio controls src={audio} className="w-full" />
+        <div className="mt-3 flex items-center gap-3"><button className="btn-primary" disabled={saving} onClick={save}><Save size={16} /> {saving ? 'Saving…' : 'Save file'}</button>{msg && <span role="status" className="text-sm">{msg}</span>}</div></div>}
       {text && (
         <div className="card space-y-4">
           <p className="text-sm font-medium">{name}</p>
@@ -53,8 +77,10 @@ export default function Listen() {
               : state === 'paused' ? <button className="btn-primary" onClick={() => { resumeSpeaking(); setState('playing') }}><Play size={16} /> Resume</button>
               : <button className="btn-primary" onClick={play} disabled={!canSpeak}><Play size={16} /> Read aloud</button>}
             <button className="btn-ghost" onClick={() => { stopSpeaking(); setState('idle') }}><Square size={16} /> Stop</button>
+            <button className="btn-ghost" disabled={saving || !text.trim()} onClick={save}><Save size={16} /> {saving ? 'Saving…' : 'Save'}</button>
           </div>
-          <p className="text-xs text-slate-500">Files are read in your browser and are not uploaded or stored.</p>
+          {msg && <p role="status" className="text-sm">{msg}</p>}
+          <p className="text-xs text-slate-500">Files are read in your browser. Nothing is uploaded or stored unless you press Save.</p>
         </div>)}
     </div>)
 }
