@@ -16,7 +16,7 @@ function chunk(text) {
   }
   if (buf) out.push(buf); return out
 }
-export async function translate(text, from, to) {
+async function translateDirect(text, from, to) {
   const parts = []
   for (const c of chunk(text)) {
     const r = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(c)}&langpair=${from}|${to}`)
@@ -27,6 +27,17 @@ export async function translate(text, from, to) {
     parts.push(t)
   }
   return parts.join(' ')
+}
+
+// In production, translation runs on the Python function at /api/translate.
+// During `npm run dev` (which does not run Python), it calls the service directly.
+export async function translate(text, from, to) {
+  if (import.meta.env.DEV) return translateDirect(text, from, to)
+  const r = await fetch('/api/translate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, source: from, target: to }) })
+  const d = await r.json().catch(() => ({}))
+  if (!r.ok) throw new Error(d.error || 'Translation failed. Please try again.')
+  if (typeof d.translation !== 'string') throw new Error('The translation service is not available yet. Please try again later.')
+  return d.translation
 }
 
 export default function Translate() {
