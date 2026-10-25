@@ -1,60 +1,111 @@
-Text2Talk
+# Text2Talk
 
-Your Voice. Your Words. Your World.
+**Your Voice. Your Words. Your World.**
 
-Text2Talk is a web app that turns speech into text and text into speech, and translates between languages. It runs in the browser, uses Supabase for accounts and data, and uses small Python functions on Vercel for translation and the contact form.
+Text2Talk is a web app that turns speech into text, turns text into speech, and translates between languages. You can talk and watch your words appear, hear any text read aloud, translate what you say as you say it, and keep everything you save in a private account.
 
-Live site: https://text2talk-final.vercel.app
+**Live site:** https://text2talk-final.vercel.app
 
-Features
-Area	What it does
-Speech-to-Text	Continuous dictation with live text, a timer, language choice, editing, copy, save, and download. Listening restarts automatically after pauses.
-Text-to-Speech	Reads text aloud using the browser's voices, with speed, pitch, and volume controls. Play, pause, resume, stop, save.
-Translate	Translates text between 18 languages. Copy, listen, or download the result.
-Live Translation	Speak into the microphone and see each finished phrase translated while you keep talking.
-Listen to File	Drag and drop a .txt, .md, or .docx file to hear it read aloud, or an audio file to play it. Save either to your account.
-History	Saved transcripts and audio items, with search, rename, favorites, delete, listen, play, and download.
-Downloads	Export any text as TXT, Word (.docx), PDF, Markdown, HTML, RTF, or JSON.
-Accounts	Email sign-up with verification, sign-in, password reset, optional Google sign-in, protected pages.
-Legal and contact	Privacy Policy, Terms of Service, and a contact form that stores messages in the database.
-Design	Responsive layout, light theme with a navy, indigo, steel, and beige palette, keyboard-friendly controls, reduced-motion support.
-Tech stack
-Front end: React 18, Vite 5, Tailwind CSS 3, React Router 6, React Hook Form + Zod, Lucide icons
-Back end: Supabase (Auth, PostgreSQL with Row Level Security, Storage)
-Serverless: Python 3 functions on Vercel (standard library only)
-Speech: Web Speech API (recognition) and Speech Synthesis API (voices), both built into the browser
-Files: docx, jspdf, mammoth
-Tests: Vitest
-Hosting: Vercel
-Browser support
-Speech-to-Text and Live Translation: Chrome, Edge, Safari. Firefox does not support speech recognition. An internet connection is required.
-Text-to-Speech and Listen to File: most modern browsers. Available voices depend on the device.
-The microphone only works on HTTPS or localhost.
-Project structure
-text2talk/
-├── api/                        Python serverless functions
-│   ├── translate.py            POST /api/translate
-│   └── contact.py              POST /api/contact
-├── public/                     favicon.svg, logo.png
-├── supabase/                   SQL setup scripts
-│   ├── schema.sql              profiles, transcripts, audio_generations + security rules
-│   ├── contact_messages.sql    contact form table
-│   └── audio_storage.sql       private bucket for saved audio files
-├── tools/
-│   └── security_check.py       basic security checker (optional)
-├── src/
-│   ├── components/             Logo, DownloadMenu, SpeakTranslate, LiveTranslate
-│   ├── features/
-│   │   ├── auth/               AuthContext, sign-in/register/reset pages, tests
-│   │   ├── stt/                SpeechToText page and useSpeechRecognition hook
-│   │   └── tts/                TextToSpeech page
-│   ├── lib/                    supabase.js, site.js, speak.js, exportText.js
-│   ├── pages/                  Landing, Dashboard, History, Translate, Live, Listen, Legal
-│   ├── App.jsx                 routes
-│   ├── main.jsx
-│   └── index.css
-├── index.html
-├── tailwind.config.js          color palette and fonts
-├── vercel.json                 rewrites and security headers
-├── package.json
-└── .env.example
+---
+
+## What you can do
+
+| Tool | In one line |
+|---|---|
+| **Speech-to-Text** | Speak and see your words appear as text. |
+| **Text-to-Speech** | Type or paste text and hear it read aloud. |
+| **Translate** | Translate text between 18 languages. |
+| **Live Translation** | Speak in one language and read the translation phrase by phrase while you talk. |
+| **Listen to File** | Drop in a document to hear it read aloud, or an audio file to play it. |
+| **History** | Find, replay, rename, favorite, and download everything you saved. |
+
+## How each tool works
+
+### Speech-to-Text
+Choose your language, tick the microphone consent box, and press **Start Recording**. Your browser's speech recognition turns what you say into text, which appears live in an editable box with a recording timer. Browsers normally stop listening after a few seconds of silence, so Text2Talk quietly starts a new listening session each time one ends. You can pause for a while and keep speaking, and half-recognized words are kept instead of being lost.
+
+When you finish, edit the text, copy it, download it, or save it to your account.
+
+### Text-to-Speech
+Type or paste text, pick a voice, and adjust the speed, pitch, and volume. The text is read aloud using the voices built into your browser, with play, pause, resume, and stop controls. You can save the text and your settings to your account. This is playback only: it does not produce a downloadable audio file.
+
+### Translate
+Pick the language of your text and the language you want, then press **Translate**. The text is sent to a small Python function on the server, which splits it into sentences, translates them in parallel with a translation service, and returns the result. You can then copy it, hear it read aloud in the target language, or download it.
+
+### Live Translation
+Choose the language you speak and the language you want, then start talking. Each time you finish a phrase, it is translated and appears on the right while your original words stay on the left, so you can keep talking without pressing anything. The translation can be copied, read aloud, or cleared.
+
+### Listen to File
+Drag a file onto the drop area, or click to choose one.
+- **Text documents** (`.txt`, `.md`, `.docx`) are read in your browser, shown in an editable box, and read aloud with your choice of language and speed.
+- **Audio files** (mp3, wav, m4a) play in a built-in player.
+
+Pressing **Save** keeps the document text in your Audio History, or uploads the audio file to private storage that only you can open.
+
+### History
+Everything you save appears under **My Transcripts**, **Audio History**, and **Favorites**. You can search, rename, star, delete (with confirmation), listen again, play saved audio, and download items.
+
+### Downloads
+Any text can be downloaded as **TXT, Word (.docx), PDF, Markdown, HTML, RTF, or JSON**. The PDF export supports Latin text, so use Word for other scripts such as Hindi.
+
+### Accounts
+Create an account with your email and a strong password, then confirm it through the verification email. You can sign in, reset a forgotten password, and sign out. Google sign-in is available when it is configured. Pages inside the app are protected: visitors who are not signed in are sent to the sign-in page.
+
+### Dashboard
+After signing in you land on an overview with quick-access cards for each tool and a sidebar that becomes a menu drawer on phones. The sidebar also holds your saved items, settings (including light and dark themes), and help.
+
+### Contact and legal pages
+A contact form sends messages to the team, and the Privacy Policy and Terms of Service explain how data is handled.
+
+## How it works behind the scenes
+
+```mermaid
+flowchart LR
+  A[Your voice] --> B[Browser speech recognition]
+  B --> C[Text]
+  C --> D[Edit / copy / download]
+  C --> E[Python translate function]
+  E --> F[Translated text]
+  C --> G[Save to account]
+  F --> G
+  C --> H[Browser voices]
+  F --> H
+  H --> I[Spoken audio]
+```
+
+- **Front end:** a React single-page app. It handles the screens, the microphone, and the voices through the browser's built-in speech tools.
+- **Accounts and data:** Supabase provides sign-in, a PostgreSQL database for saved items, and private file storage for saved audio.
+- **Translation and contact:** two small Python functions run on the server. One translates text, and the other validates and stores contact messages.
+- **Hosting:** the site is served over HTTPS from Vercel.
+
+## Privacy and security
+
+- **Passwords** are hashed and stored by the sign-in provider. Text2Talk never sees or stores them.
+- **Private data:** database rules ensure each person can only read and change their own transcripts, audio items, and files.
+- **Your voice:** Text2Talk does not record or store raw audio. Your browser's speech recognition may send audio to your browser vendor's speech service, and the app asks for your consent before using the microphone.
+- **Translation:** text you translate is sent to a third-party translation service, and the app says so wherever it applies. Avoid translating sensitive information.
+- **Saved content:** only what you choose to save is stored, and you can delete it at any time.
+- **Protection:** the site enforces HTTPS, escapes all displayed text, and sends security headers that block unexpected scripts and framing. The contact form validates input, ignores bots, and limits how many messages one visitor can send per hour, using a hashed form of their IP address.
+
+## Supported languages
+
+- **Speech recognition and reading:** English (US, UK, India), Hindi, Spanish, French, German.
+- **Translation (18):** English, Hindi, Spanish, French, German, Italian, Portuguese, Japanese, Korean, Chinese (Simplified), Arabic, Russian, Bengali, Tamil, Telugu, Marathi, Gujarati, Urdu.
+
+## Browser support
+
+- **Speech-to-Text and Live Translation:** Chrome, Edge, and Safari, with an internet connection. Firefox does not support speech recognition.
+- **Text-to-Speech and Listen to File:** most modern browsers. The available voices depend on your device.
+- The microphone only works on secure (HTTPS) pages.
+
+## Built with
+
+React, Vite, Tailwind CSS, React Router, Supabase (Auth, PostgreSQL, Storage), Python serverless functions, the Web Speech and Speech Synthesis APIs, and Vercel.
+
+## Current limitations
+
+- Text-to-Speech is browser playback only, so there is no downloadable voice audio yet.
+- Live Translation works phrase by phrase, not word by word, and the free translation service has daily limits. Machine translation can contain mistakes.
+- Listen to File cannot read PDF files yet.
+- Profile editing, a saved default voice, notification settings, and in-app account deletion are not available yet.
+- The Pro plan ($10 per month) is announced as "coming soon" and cannot be purchased yet.
