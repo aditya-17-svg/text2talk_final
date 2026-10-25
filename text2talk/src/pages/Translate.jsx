@@ -3,7 +3,7 @@ import { ArrowLeftRight, Copy, Languages, Square, Volume2 } from 'lucide-react'
 import DownloadMenu from '../components/DownloadMenu'
 import { speak, stopSpeaking } from '../lib/speak'
 
-const LANGS = [['en', 'English'], ['hi', 'Hindi'], ['es', 'Spanish'], ['fr', 'French'], ['de', 'German'], ['it', 'Italian'], ['pt', 'Portuguese'], ['ja', 'Japanese'],
+export const LANGS = [['en', 'English'], ['hi', 'Hindi'], ['es', 'Spanish'], ['fr', 'French'], ['de', 'German'], ['it', 'Italian'], ['pt', 'Portuguese'], ['ja', 'Japanese'],
   ['ko', 'Korean'], ['zh-CN', 'Chinese (Simplified)'], ['ar', 'Arabic'], ['ru', 'Russian'], ['bn', 'Bengali'], ['ta', 'Tamil'], ['te', 'Telugu'], ['mr', 'Marathi'], ['gu', 'Gujarati'], ['ur', 'Urdu']]
 const MAX = 5000
 
@@ -16,7 +16,7 @@ function chunk(text) {
   }
   if (buf) out.push(buf); return out
 }
-async function translate(text, from, to) {
+export async function translate(text, from, to) {
   const parts = []
   for (const c of chunk(text)) {
     const r = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(c)}&langpair=${from}|${to}`)
