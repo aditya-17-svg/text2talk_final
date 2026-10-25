@@ -1,6 +1,7 @@
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon, Languages, Upload, LifeBuoy } from 'lucide-react'
+import SpeakTranslate from '../components/SpeakTranslate'
 import Logo from '../components/Logo'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../features/auth/AuthContext'
@@ -54,6 +55,7 @@ export function Overview() {
             <h2 className="font-bold">{t}</h2><p className="mt-1 text-sm text-ink/75">{d}</p>
           </Link>))}
       </div>
+      <SpeakTranslate />
     </div>)
 }
 
