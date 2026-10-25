@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Star, Trash2, Volume2, Square } from 'lucide-react'
+import { Star, Trash2, Volume2, Square, Play, Download } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import DownloadMenu from '../components/DownloadMenu'
 import { speak, stopSpeaking, canSpeak } from '../lib/speak'
 
 export default function History({ table, field, title, favoritesOnly = false }) {
-  const [rows, setRows] = useState(null); const [q, setQ] = useState(''); const [err, setErr] = useState(''); const [playing, setPlaying] = useState(null)
+  const [rows, setRows] = useState(null); const [q, setQ] = useState(''); const [err, setErr] = useState(''); const [playing, setPlaying] = useState(null); const [urls, setUrls] = useState({})
   const load = async () => {
     let query = supabase.from(table).select('*').order('created_at', { ascending: false })
     if (favoritesOnly) query = query.eq('is_favorite', true)
@@ -14,7 +14,17 @@ export default function History({ table, field, title, favoritesOnly = false }) 
   useEffect(() => { load(); return () => stopSpeaking() }, [table])
   const fav = async r => { await supabase.from(table).update({ is_favorite: !r.is_favorite }).eq('id', r.id); load() }
   const rename = async (r, t) => { if (t.trim() && t !== r.title) { await supabase.from(table).update({ title: t.trim() }).eq('id', r.id); load() } }
-  const del = async r => { if (confirm('Delete this item permanently?')) { await supabase.from(table).delete().eq('id', r.id); load() } }
+  const del = async r => { if (confirm('Delete this item permanently?')) { if (r.audio_storage_path) await supabase.storage.from('audio-files').remove([r.audio_storage_path]); await supabase.from(table).delete().eq('id', r.id); load() } }
+  const playFile = async r => {
+    const { data, error } = await supabase.storage.from('audio-files').createSignedUrl(r.audio_storage_path, 3600)
+    if (error) return setErr('Could not open the audio file.')
+    setUrls(u => ({ ...u, [r.id]: data.signedUrl }))
+  }
+  const downloadFile = async r => {
+    const { data, error } = await supabase.storage.from('audio-files').createSignedUrl(r.audio_storage_path, 60, { download: r.title || true })
+    if (error) return setErr('Could not download the audio file.')
+    window.location.href = data.signedUrl
+  }
   const toggle = r => {
     if (playing === r.id) { stopSpeaking(); setPlaying(null); return }
     setPlaying(r.id); speak(r[field], { lang: r.language, rate: Number(r.speech_rate) || 1, onEnd: () => setPlaying(p => (p === r.id ? null : p)) })
@@ -35,9 +45,10 @@ export default function History({ table, field, title, favoritesOnly = false }) 
               <button aria-label="Delete" onClick={() => del(r)}><Trash2 size={18} className="text-slate-400" /></button>
             </div>
             <p className="line-clamp-3 text-sm text-slate-600 dark:text-slate-400">{r[field]}</p>
+            {urls[r.id] && <audio controls autoPlay src={urls[r.id]} className="w-full" />}
             <div className="flex flex-wrap items-center gap-2">
-              <button className="btn-ghost" disabled={!canSpeak} onClick={() => toggle(r)}>{playing === r.id ? <><Square size={16} /> Stop</> : <><Volume2 size={16} /> Listen</>}</button>
-              <DownloadMenu text={r[field]} title={r.title} />
+              {!r.audio_storage_path && <button className="btn-ghost" disabled={!canSpeak} onClick={() => toggle(r)}>{playing === r.id ? <><Square size={16} /> Stop</> : <><Volume2 size={16} /> Listen</>}</button>}
+              {r.audio_storage_path ? <><button className="btn-ghost" onClick={() => playFile(r)}><Play size={16} /> Play</button><button className="btn-ghost" onClick={() => downloadFile(r)}><Download size={16} /> Download</button></> : <DownloadMenu text={r[field]} title={r.title} />}
               <span className="ml-auto text-xs text-slate-400">{new Date(r.created_at).toLocaleString()} · {r.language}</span>
             </div>
           </div>))}
