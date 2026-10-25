@@ -19,6 +19,53 @@ Text2Talk is a web app that turns speech into text, turns text into speech, and 
 | **Listen to File** | Drop in a document to hear it read aloud, or an audio file to play it. |
 | **History** | Find, replay, rename, favorite, and download everything you saved. |
 
+## What it is built with, and why
+
+### Screens and design
+| Technology | What it is used for |
+|---|---|
+| **React** | Builds the screens and keeps them updating live as you speak, type, and translate. |
+| **Vite** | Packages the app so it loads quickly. |
+| **Tailwind CSS** | Styles the pages: colors, spacing, and layouts that adapt to phones, tablets, and computers. |
+| **React Router** | Moves between pages (home, sign-in, dashboard, tools) without reloading, and keeps private pages behind sign-in. |
+| **React Hook Form and Zod** | Run the sign-up and sign-in forms and check them (valid email, strong password, matching passwords). |
+| **Lucide** | The icons. |
+
+### Speech
+| Technology | What it is used for |
+|---|---|
+| **Web Speech API (recognition)** | Built into Chrome, Edge, and Safari. Turns your spoken words into text for Speech-to-Text and Live Translation. |
+| **Speech Synthesis API** | Built into the browser. Reads text aloud with your device's voices in Text-to-Speech, Translate, Listen to File, and History. |
+
+### Accounts and saved data
+| Technology | What it is used for |
+|---|---|
+| **Supabase Auth** | Handles sign-up, email verification, sign-in, password reset, and sessions. It also hashes and protects passwords. |
+| **Supabase PostgreSQL** | The database that stores profiles, saved transcripts, audio items, and contact messages. |
+| **Row Level Security** | Database rules that let each person see and change only their own records. |
+| **Supabase Storage** | Private storage for the audio files you save. |
+
+### Server and hosting
+| Technology | What it is used for |
+|---|---|
+| **Python serverless functions** | Two small programs that run on the server: one translates text, and the other checks and stores contact messages. |
+| **MyMemory translation service** | The outside service that does the actual translation work. |
+| **Python SHA-256 hashing** | Turns visitors' IP addresses into scrambled codes so the contact form can limit spam without keeping the real address. |
+| **Vercel** | Hosts the site over HTTPS, runs the Python functions, and adds security headers. |
+
+### Files
+| Technology | What it is used for |
+|---|---|
+| **docx** | Creates Word (.docx) downloads. |
+| **jsPDF** | Creates PDF downloads. |
+| **mammoth** | Reads the text inside Word files you drop into Listen to File. |
+| **Browser drag-and-drop and file access** | Lets Listen to File accept a dropped file and read it on your device without uploading it. |
+
+### Quality checks
+| Technology | What it is used for |
+|---|---|
+| **Vitest** | Runs automated tests, such as the sign-up form rules. |
+
 ## How each tool works
 
 ### Speech-to-Text
@@ -97,10 +144,6 @@ flowchart LR
 - **Speech-to-Text and Live Translation:** Chrome, Edge, and Safari, with an internet connection. Firefox does not support speech recognition.
 - **Text-to-Speech and Listen to File:** most modern browsers. The available voices depend on your device.
 - The microphone only works on secure (HTTPS) pages.
-
-## Built with
-
-React, Vite, Tailwind CSS, React Router, Supabase (Auth, PostgreSQL, Storage), Python serverless functions, the Web Speech and Speech Synthesis APIs, and Vercel.
 
 ## Current limitations
 
