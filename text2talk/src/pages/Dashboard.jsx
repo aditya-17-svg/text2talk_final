@@ -2,6 +2,7 @@ import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon, Languages, Upload, LifeBuoy, Radio } from 'lucide-react'
 import Logo from '../components/Logo'
+import { SITE_URL } from '../lib/site'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../features/auth/AuthContext'
 
@@ -66,7 +67,7 @@ export function Settings_() {
     <div className="space-y-4"><h1 className="text-2xl font-bold">Settings</h1>
       <div className="card space-y-3"><p className="text-sm">Email: <b>{user?.email}</b></p>
         <button className="btn-ghost" onClick={toggle}><Moon size={16} /> {dark ? 'Light' : 'Dark'} theme</button>
-        <button className="btn-ghost" onClick={() => supabase.auth.resetPasswordForEmail(user.email, { redirectTo: `${location.origin}/app/settings` })}>Send password reset email</button>
+        <button className="btn-ghost" onClick={() => supabase.auth.resetPasswordForEmail(user.email, { redirectTo: `${SITE_URL} /app/settings` })}>Send password reset email</button>
         <p className="text-xs text-slate-500">Profile editing, default voice/rate and account deletion (needs a server function with the service role key) are the next things to add.</p>
       </div></div>)
 }
