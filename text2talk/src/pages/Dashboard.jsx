@@ -1,13 +1,12 @@
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon, Languages, Upload, LifeBuoy } from 'lucide-react'
-import SpeakTranslate from '../components/SpeakTranslate'
+import { Mic, Volume2, FileText, Headphones, Star, Settings, LogOut, Menu, LayoutDashboard, X, Moon, Languages, Upload, LifeBuoy, Radio } from 'lucide-react'
 import Logo from '../components/Logo'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../features/auth/AuthContext'
 
 const nav = [['/app', 'Overview', LayoutDashboard, true], ['/app/speech-to-text', 'Speech-to-Text', Mic], ['/app/text-to-speech', 'Text-to-Speech', Volume2],
-  ['/app/translate', 'Translate', Languages], ['/app/listen', 'Listen to File', Upload],
+  ['/app/translate', 'Translate', Languages], ['/app/live', 'Live Translation', Radio], ['/app/listen', 'Listen to File', Upload],
   ['/app/transcripts', 'My Transcripts', FileText], ['/app/audio', 'Audio History', Headphones], ['/app/favorites', 'Favorites', Star], ['/app/settings', 'Settings', Settings]]
 
 // Sidebar buttons: soft white pills on peach, dark purple for the current page
@@ -40,7 +39,8 @@ export function Layout() {
 }
 
 const widgets = [['/app/speech-to-text', 'Speech-to-Text', 'Dictate and transcribe in real time.', Mic], ['/app/text-to-speech', 'Text-to-Speech', 'Hear your text read aloud.', Volume2],
-  ['/app/translate', 'Language Conversion', 'Translate text from one language to another.', Languages]]
+  ['/app/translate', 'Language Conversion', 'Translate text from one language to another.', Languages],
+  ['/app/live', 'Live Translation', 'Speak and watch the translation appear live.', Radio]]
 
 export function Overview() {
   const { user } = useAuth()
@@ -48,14 +48,13 @@ export function Overview() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Welcome, {name} 👋</h1>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {widgets.map(([to, t, d, Icon]) => (
           <Link key={to} to={to} className="rounded-3xl border border-[#7288ae] bg-[#7288ae] p-6 text-ink shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#8fa1c2] hover:bg-[#8fa1c2] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night">
             <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/50"><Icon size={20} /></span>
             <h2 className="font-bold">{t}</h2><p className="mt-1 text-sm text-ink/75">{d}</p>
           </Link>))}
       </div>
-      <SpeakTranslate />
     </div>)
 }
 
